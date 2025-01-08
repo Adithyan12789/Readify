@@ -58,12 +58,7 @@ class UserController {
 
   authUser = asyncHandler(
     async (req: Request, res: Response): Promise<void> => {
-      console.log("entered auth controller function");
-      
-
       const { email, password } = req.body;
-
-      console.log("req.body: ", req.body);
 
       if (!email || !password) {
         res.status(400).json({ message: "Email and password are required" });
@@ -72,8 +67,6 @@ class UserController {
 
       try {
         const user = await UserService.authenticateUser(email, password);
-
-        console.log("controller user: " , user);
         
         const accessToken = TokenService.generateAccessToken(
           user._id.toString()
@@ -352,8 +345,6 @@ class UserController {
 
   getUserProfile = asyncHandler(
     async (req: CustomRequest, res: Response): Promise<void> => {
-      console.log("Entered");
-      
 
       if (!req.user) {
         res.status(401).json({ message: "Unauthorized" });

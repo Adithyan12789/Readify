@@ -36,7 +36,7 @@ const Header: React.FC = () => {
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
 
   return (
-    <header className="bg-gradient-to-r from-blue-500 to-indigo-600">
+    <header className="bg-gradient-to-r from-indigo-500 to-purple-500">
       <nav className="flex items-center justify-between px-5">
         {/* Logo Section */}
         <div className="flex items-center">

@@ -31,6 +31,10 @@ class UserImageUploads {
 
   private static userStorage(): StorageEngine {
     return this.createStorage("UserProfileImages");
+  }  
+  
+  private static bookStorage(): StorageEngine {
+    return this.createStorage("bookImages");
   }
 
   private static fileFilter(
@@ -49,6 +53,11 @@ class UserImageUploads {
 
   public static multerUploadUserProfile = multer({
     storage: this.userStorage(),
+    fileFilter: this.fileFilter,
+  });  
+  
+  public static multerUpload = multer({
+    storage: this.bookStorage(),
     fileFilter: this.fileFilter,
   });
 }

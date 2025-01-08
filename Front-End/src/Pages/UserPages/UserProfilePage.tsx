@@ -132,6 +132,7 @@ const ProfileScreen: React.FC = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-70">
           <div className="relative w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
             <button
+              title="edit profile modal"
               onClick={() => setShowModal(false)}
               className="absolute text-gray-400 top-4 right-4 hover:text-gray-600"
             >

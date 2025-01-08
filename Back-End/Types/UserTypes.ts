@@ -16,4 +16,14 @@ export interface IUser extends Document {
     resetPasswordToken?: string;
     resetPasswordExpires?: Date;
     matchPassword: (password: string) => Promise<boolean>;
-  }
+}
+
+export interface IBook extends Document {
+  _id: ObjectId;
+  title: string;
+  author: string;
+  publicationYear: number;
+  isbn: string; // Changed to string to match schema
+  description?: string; // Optional field
+  image: string;
+}

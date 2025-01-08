@@ -2,6 +2,7 @@ import express from 'express';
 import UserController from '../Controllers/UserController';
 import { AuthMiddleware } from '../Middlewares/AuthMiddleware';
 import MulterConfig from '../Config/Multer';
+import BookController from '../Controllers/BookController';
 
 const router = express.Router();
 
@@ -18,6 +19,17 @@ router.post('/refresh-token', UserController.refreshToken);
 router.route('/profile')
 .get( AuthMiddleware, UserController.getUserProfile )
 .put( AuthMiddleware, MulterConfig.multerUploadUserProfile.single('profileImage'), UserController.updateUserProfile);
+
+
+router.route('/books')
+  .post(AuthMiddleware, MulterConfig.multerUpload.single('bookImage'), BookController.createBook)
+  .get(BookController.getAllBooks);
+
+router.route('/books/:id')
+  .get(BookController.getBookById)
+  .put(AuthMiddleware, MulterConfig.multerUpload.single('image'), BookController.updateBook)
+  .delete(AuthMiddleware, BookController.deleteBook);
+
 
 router.post('/logout', UserController.logoutUser);
 

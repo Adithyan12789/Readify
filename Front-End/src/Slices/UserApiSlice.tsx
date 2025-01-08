@@ -10,6 +10,7 @@ const USERS_URL = "/api/users";
 
 export const usersApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
+    // User endpoints
     login: builder.mutation<UserResponse, UserCredentials>({
       query: (data) => ({
         url: `${USERS_URL}/auth`,
@@ -93,13 +94,43 @@ export const usersApiSlice = apiSlice.injectEndpoints({
       }),
     }),
 
-    getMovies: builder.mutation({
+    // Book endpoints
+    createBook: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/books`,
+        method: "POST",
+        body: data,
+      }),
+    }),
+
+    getBooks: builder.query({
       query: () => ({
-        url: `${USERS_URL}/get-movies`,
+        url: `${USERS_URL}/books`,
         method: "GET",
       }),
     }),
 
+    getBookById: builder.query({
+      query: (id: string) => ({
+        url: `${USERS_URL}/books/${id}`,
+        method: "GET",
+      }),
+    }),
+
+    editBook: builder.mutation({
+      query: (data) => ({
+        url: `${USERS_URL}/books/${data.id}`,
+        method: "PUT",
+        body: data,
+      }),
+    }),
+
+    deleteBook: builder.mutation({
+      query: (id: string) => ({
+        url: `${USERS_URL}/books/${id}`,
+        method: "DELETE",
+      }),
+    }),
   }),
 });
 
@@ -114,5 +145,9 @@ export const {
   useRefreshTokenMutation,
   useGetUserProfileQuery,
   useUpdateUserMutation,
-  useGetMoviesMutation,
+  useCreateBookMutation,
+  useGetBooksQuery,
+  useGetBookByIdQuery,
+  useEditBookMutation,
+  useDeleteBookMutation,
 } = usersApiSlice;

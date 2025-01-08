@@ -7,6 +7,7 @@ import ForgotPassword from '../Pages/UserPages/ForgetPasswordPage';
 import ResetPassword from '../Pages/UserPages/ResetPasswordPage';
 import UserProfilePage from '../Pages/UserPages/UserProfilePage';
 import PrivateRoute from '../Components/UserComponents/PrivateRoute';
+import BookDetailPage from '../Pages/UserPages/BookDetailPage';
 
 export const UserRoutes = (
   <>
@@ -19,6 +20,7 @@ export const UserRoutes = (
 
     <Route path="" element={<PrivateRoute />}>
       <Route path="/profile" element={<UserProfilePage />} />
+      <Route path="/book/:bookId" element={<BookDetailPage />} />
     </Route>
   </>
 );  
