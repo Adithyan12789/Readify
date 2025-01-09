@@ -81,7 +81,7 @@ const HomePage: React.FC = () => {
           <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
             <h2 className="mb-8 text-3xl font-extrabold text-gray-800">Featured Books</h2>
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-              {books.slice(0, 4).map((book: BookData) => (
+              {books.map((book: BookData) => (
                 <div
                   key={book._id}
                   onClick={() => navigate(`/book/${book._id}`)}
