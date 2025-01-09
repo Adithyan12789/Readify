@@ -81,25 +81,31 @@ const HomePage: React.FC = () => {
           <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
             <h2 className="mb-8 text-3xl font-extrabold text-gray-800">Featured Books</h2>
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-              {books.map((book: BookData) => (
-                <div
-                  key={book._id}
-                  onClick={() => navigate(`/book/${book._id}`)}
-                  className="p-4 bg-white rounded-lg shadow-md cursor-pointer group hover:shadow-lg"
-                >
-                  <div className="overflow-hidden rounded-lg aspect-w-3 aspect-h-4">
-                    <img
-                      src={book.image ? `${BOOK_IMAGE_DIR_PATH}${book.image}` : ""}
-                      alt={book.title}
-                      className="object-cover object-center w-full h-full transition-transform duration-300 group-hover:scale-105"
-                    />
+              {books.length === 0 ? (
+                    <div className="text-lg text-center text-gray-600 col-span-full">
+                    There are no books available.
                   </div>
-                  <h3 className="mt-4 text-lg font-semibold text-gray-900 group-hover:text-indigo-600">
-                    {book.title}
-                  </h3>
-                  <p className="mt-2 text-sm text-gray-600">{book.author}</p>
-                </div>
-              ))}
+              ) : (
+                books.slice(0, 4).map((book: BookData) => (
+                  <div
+                    key={book._id}
+                    onClick={() => navigate(`/book/${book._id}`)}
+                    className="p-4 bg-white rounded-lg shadow-md cursor-pointer group hover:shadow-lg"
+                  >
+                    <div className="overflow-hidden rounded-lg aspect-w-3 aspect-h-4">
+                      <img
+                        src={book.image ? `${BOOK_IMAGE_DIR_PATH}${book.image}` : ""}
+                        alt={book.title}
+                        className="object-cover object-center w-full h-full transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </div>
+                    <h3 className="mt-4 text-lg font-semibold text-gray-900 group-hover:text-indigo-600">
+                      {book.title}
+                    </h3>
+                    <p className="mt-2 text-sm text-gray-600">{book.author}</p>
+                  </div>
+                ))
+              )}
             </div>
             <div className="mt-12 text-center">
               <a
