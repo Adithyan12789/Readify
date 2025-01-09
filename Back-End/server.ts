@@ -3,12 +3,15 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import UserRoutes from "./Routes/UserRoutes";
 import express from "express";
+import { createBookIndex } from "./Middlewares/ElasticsearchMiddleware";
 const app = express();
 
 dotenv.config();
 Database.connectDB();
 
 const port = process.env.PORT || 5000;
+
+createBookIndex();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
