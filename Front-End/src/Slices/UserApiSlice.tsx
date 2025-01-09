@@ -118,8 +118,8 @@ export const usersApiSlice = apiSlice.injectEndpoints({
     }),
 
     editBook: builder.mutation({
-      query: (data) => ({
-        url: `${USERS_URL}/books/${data.id}`,
+      query: ({ data, bookId }) => ({
+        url: `${USERS_URL}/books/${bookId}`,
         method: "PUT",
         body: data,
       }),

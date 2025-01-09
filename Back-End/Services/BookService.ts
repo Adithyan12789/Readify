@@ -32,13 +32,18 @@ class BookService {
     return book;
   }
 
-  async updateBook(id: string, data: any) {
+  async updateBook(id: string, data: any, filename?: string) {
+
+    if (filename) {
+      data.image = filename;
+    }
+  
     const updatedBook = await BookRepository.updateBook(id, data);
     if (!updatedBook) {
       throw new Error("Book not found");
     }
     return updatedBook;
-  }
+  }  
 
   async deleteBook(id: string) {
     const deletedBook = await BookRepository.deleteBook(id);

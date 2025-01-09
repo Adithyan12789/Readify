@@ -14,9 +14,13 @@ class BookRepository {
   }
 
   updateBook(id: string, data: any) {
-    return Book.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+    return Book.findByIdAndUpdate(
+      id,
+      { $set: data },
+      { new: true, runValidators: true }
+    );
   }
-
+  
   deleteBook(id: string) {
     return Book.findByIdAndDelete(id);
   }

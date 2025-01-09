@@ -42,8 +42,6 @@ class BookController {
       try {
         let bookId = req.params.id;
 
-        console.log("bookId: ", bookId);
-
         const book = await BookService.getBookById(bookId);
         res.status(200).json(book);
       } catch (error) {
@@ -54,17 +52,25 @@ class BookController {
 
   updateBook = asyncHandler(
     async (req: Request, res: Response): Promise<void> => {
+
       try {
-        const updatedBook = await BookService.updateBook(
-          req.params.id,
-          req.body
-        );
+        const bookId = req.params.id;
+        const data = req.body;
+        const image = req.file;
+        const filename = image?.filename;
+  
+        const updatedBook = await BookService.updateBook(bookId, data, filename);
+        if (!updatedBook) {
+          res.status(404).json({ message: "Book not found" });
+          return;
+        }
+  
         res.status(200).json(updatedBook);
       } catch (error) {
-        res.status(404).json({ message: error });
+        res.status(500).json({ message: "Failed to update book", error });
       }
     }
-  );
+  );  
 
   deleteBook = asyncHandler(
     async (req: Request, res: Response): Promise<void> => {

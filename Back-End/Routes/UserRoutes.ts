@@ -27,7 +27,7 @@ router.route('/books')
 
 router.route('/books/:id')
   .get(BookController.getBookById)
-  .put(AuthMiddleware, MulterConfig.multerUpload.single('image'), BookController.updateBook)
+  .put(AuthMiddleware, MulterConfig.multerUpload.single('bookImage'), BookController.updateBook)
   .delete(AuthMiddleware, BookController.deleteBook);
 
 
