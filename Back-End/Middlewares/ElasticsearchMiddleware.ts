@@ -1,8 +1,11 @@
 import client from "../Config/Elasticsearch";
 
 export const createBookIndex = async () => {
+  console.log("entereed createBookIndex");
   try {
     const exists = await client.indices.exists({ index: "books" });
+
+    console.log("exists: ", exists);
 
     if (!exists) {
       await client.indices.create({
