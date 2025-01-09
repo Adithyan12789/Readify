@@ -81,7 +81,7 @@ const HomePage: React.FC = () => {
           <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
             <h2 className="mb-8 text-3xl font-extrabold text-gray-800">Featured Books</h2>
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-              {books.length === 0 ? (
+              {(books || []).length === 0 ? (
                     <div className="text-lg text-center text-gray-600 col-span-full">
                     There are no books available.
                   </div>
