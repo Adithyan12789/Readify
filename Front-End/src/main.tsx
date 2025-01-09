@@ -7,16 +7,12 @@ import "./index.css";
 import { Provider } from 'react-redux';
 import store from './Store';
 
-// import { AdminRoutes, AdminLoginRoute } from './Routes/AdminRoutes';
 import { UserRoutes } from './Routes/UserRoutes';
 import ErrorBoundaryWrapper from './Components/UserComponents/ErrorBountary';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
-      {/* Admin Routes */}
-      {/* {AdminRoutes}
-      {AdminLoginRoute} */}
 
       {/* User Routes */}
       {UserRoutes}
