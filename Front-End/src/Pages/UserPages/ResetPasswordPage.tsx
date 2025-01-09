@@ -5,7 +5,6 @@ import Loader from "../../Components/UserComponents/Loader";
 import { useParams, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock, faUnlockAlt } from '@fortawesome/free-solid-svg-icons';
-import React from 'react';
 
 const ResetPasswordScreen = () => {
   const [password, setPassword] = useState('');

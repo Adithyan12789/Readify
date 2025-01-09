@@ -4,7 +4,6 @@ import { toast } from 'react-toastify';
 import Loader from "../../Components/UserComponents/Loader";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
-import React from 'react';
 
 const ForgotPasswordScreen = () => {
   const [email, setEmail] = useState('');
