@@ -7,6 +7,6 @@ const elasticsearch_1 = require("@elastic/elasticsearch");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const client = new elasticsearch_1.Client({
-    node: process.env.ELASTICSEARCH_URL || "http://localhost:9200",
+    node: "http://localhost:9200",
 });
 exports.default = client;

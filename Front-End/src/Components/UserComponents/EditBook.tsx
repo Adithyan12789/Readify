@@ -9,8 +9,8 @@ import { useEditBookMutation } from '../../Slices/UserApiSlice';
 
 interface EditBookModalProps {
   isOpen: boolean;
-  bookId: string;
   onClose: () => void;
+  bookId: string;
 }
 
 const BOOK_IMAGE_DIR_PATH = "http://localhost:5000/bookImages/";

@@ -6,8 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createBookIndex = void 0;
 const Elasticsearch_1 = __importDefault(require("../Config/Elasticsearch"));
 const createBookIndex = async () => {
+    console.log("entereed createBookIndex");
     try {
         const exists = await Elasticsearch_1.default.indices.exists({ index: "books" });
+        console.log("exists: ", exists);
         if (!exists) {
             await Elasticsearch_1.default.indices.create({
                 index: "books",
