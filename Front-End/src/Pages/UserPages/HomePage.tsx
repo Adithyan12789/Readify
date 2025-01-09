@@ -8,7 +8,7 @@ import { BookData } from "../../Types/UserTypes";
 import { Loader } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const BOOK_IMAGE_DIR_PATH = "http://localhost:5000/bookImages/";
+const BOOK_IMAGE_DIR_PATH = "https://api.animexz.shop/bookImages/";
 
 const HomePage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

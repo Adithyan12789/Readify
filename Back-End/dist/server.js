@@ -16,9 +16,8 @@ Database_1.default.connectDB();
 const port = process.env.PORT || 5000;
 (0, ElasticsearchMiddleware_1.createBookIndex)();
 const allowedOrigins = [
-    'https://www.tickethive.fun',
-    'https://ticket-hive-dusky.vercel.app/',
-    'http://localhost:3000'
+    'https://readify-woad.vercel.app/',
+    'http://localhost:3001'
 ];
 app.use((0, cors_1.default)({
     origin: function (origin, callback) {

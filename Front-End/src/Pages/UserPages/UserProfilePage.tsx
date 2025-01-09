@@ -10,7 +10,7 @@ import { UserInfo } from "../../Types/UserTypes";
 import Loader from "../../Components/UserComponents/Loader";
 import { useNavigate } from "react-router-dom";
 
-const PROFILE_IMAGE_DIR_PATH = "http://localhost:5000/UserProfileImages/";
+const BOOK_IMAGE_DIR_PATH = "https://api.animexz.shop/bookImages/";
 const DEFAULT_PROFILE_IMAGE = "/profileImage_1729749713837.jpg";
 
 const ProfileScreen: React.FC = () => {
@@ -107,7 +107,7 @@ const ProfileScreen: React.FC = () => {
             <img
               src={
                 userProfile.profileImageName
-                  ? `${PROFILE_IMAGE_DIR_PATH}${userProfile.profileImageName}`
+                  ? `${BOOK_IMAGE_DIR_PATH}${userProfile.profileImageName}`
                   : DEFAULT_PROFILE_IMAGE
               }
               alt="Profile"
@@ -160,7 +160,7 @@ const ProfileScreen: React.FC = () => {
                   <img
                     src={
                       profileImagePreview ||
-                      `${PROFILE_IMAGE_DIR_PATH}${userProfile.profileImageName}`
+                      `${BOOK_IMAGE_DIR_PATH}${userProfile.profileImageName}`
                     }
                     alt="Profile Preview"
                     className="w-20 h-20 border-2 border-blue-600 rounded-full cursor-pointer"

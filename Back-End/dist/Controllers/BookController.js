@@ -47,6 +47,10 @@ class BookController {
                 const data = req.body;
                 const image = req.file;
                 const filename = image?.filename;
+                console.log("bookId: ", bookId);
+                console.log("data: ", data);
+                console.log("image: ", image);
+                console.log("filename: ", filename);
                 const updatedBook = await BookService_1.default.updateBook(bookId, data, filename);
                 if (!updatedBook) {
                     res.status(404).json({ message: "Book not found" });

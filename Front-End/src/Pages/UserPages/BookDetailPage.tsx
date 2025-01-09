@@ -11,7 +11,7 @@ import Swal from "sweetalert2"; // Import SweetAlert2
 import Footer from "../../Components/UserComponents/Footer";
 import EditBookModal from "../../Components/UserComponents/EditBook";
 
-const BOOK_IMAGE_DIR_PATH = "http://localhost:5000/bookImages/";
+const BOOK_IMAGE_DIR_PATH = "https://api.animexz.shop/bookImages/";
 
 const BookDetailPage: React.FC = () => {
   const { bookId } = useParams<{ bookId: string }>();
