@@ -9,8 +9,6 @@ import UserProfilePage from '../Pages/UserPages/UserProfilePage';
 import PrivateRoute from '../Components/UserComponents/PrivateRoute';
 import BookDetailPage from '../Pages/UserPages/BookDetailPage';
 import AllBooksPage from '../Pages/UserPages/AllBooksPage';
-import EditBookModal from '../Components/UserComponents/EditBook';
-import { BookData } from '../Types/UserTypes';
 
 export const UserRoutes = (
   <>
@@ -25,12 +23,6 @@ export const UserRoutes = (
       <Route path="/profile" element={<UserProfilePage />} />
       <Route path="/book/:bookId" element={<BookDetailPage />} />
       <Route path="/allBooks" element={<AllBooksPage />} />
-      <Route path="/editBook/:bookId" element={<EditBookModal isOpen={false} onClose={function (): void {
-        throw new Error('Function not implemented.');
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } } bookId={''} editBook={function (): Promise<{ data: BookData; } | { error: any; }> {
-        throw new Error('Function not implemented.');
-      } } />} />
     </Route>
   </>
 );  
