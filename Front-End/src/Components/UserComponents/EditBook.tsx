@@ -85,7 +85,10 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
       return;
     }
   
+    
     try {
+      console.log("entered when clicked");
+      
       const formDataToSend = new FormData();
       formDataToSend.append('title', formData.title);
       formDataToSend.append('author', formData.author);
@@ -95,6 +98,9 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
       formDataToSend.append('bookImage', image);
   
       const response = await editBook({ data: formDataToSend, bookId });
+      
+      console.log("response: ", response);
+      
       if ('data' in response) {
         toast.success('Book updated successfully!');
         navigate('/');
