@@ -34,6 +34,8 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
       if (isOpen && bookId) {
         try {
           const response = await editBook({ bookId });
+          console.log("response: ", response);
+          
             setFormData(response.data);
             setPreview(response.data.image || '');
         } catch (error) {
@@ -94,18 +96,13 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
       
       console.log("formDataToSend: ", formDataToSend);
   
-      const response = await editBook({ data: formDataToSend, bookId });
+      const response2 = await editBook({ data: formDataToSend, bookId });
       
-      console.log("response: ", response);
+      console.log("response: ", response2);
       
-      if ('data' in response) {
         toast.success('Book updated successfully!');
         navigate('/');
         onClose();
-      } else {
-        toast.error('Failed to update book');
-        console.error(response.error);
-      }
     } catch (error) {
       toast.error('Failed to update book');
       console.error('Failed to update book:', error);
