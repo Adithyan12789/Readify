@@ -8,7 +8,7 @@ export default defineConfig({
     port: 3001,
     proxy: {
        '/api':{
-        target: "https://api.animexz.shop",
+        target: "https://api.readify.space",
         changeOrigin: true
        }
     }

@@ -8,7 +8,7 @@ import { BookData } from "../../Types/UserTypes";
 import { Loader } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const BOOK_IMAGE_DIR_PATH = "https://api.animexz.shop/bookImages/";
+const BOOK_IMAGE_DIR_PATH = "https://api.readify.space/bookImages/";
 
 const HomePage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);

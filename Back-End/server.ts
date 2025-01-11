@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import UserRoutes from "./Routes/UserRoutes";
 import express from "express";
 import cors from "cors"; 
+import morgan from "morgan";
 import { createBookIndex } from "./Middlewares/ElasticsearchMiddleware";
 const app = express();
 
@@ -15,7 +16,8 @@ const port = process.env.PORT || 5000;
 createBookIndex();
 
 const allowedOrigins = [
-    'https://readify-woad.vercel.app/',
+    "https://readify.space/",
+    "https://www.readify.space/",
     'http://localhost:3001'
   ];
   
@@ -31,6 +33,8 @@ const allowedOrigins = [
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   }));
   
+
+  app.use(morgan('dev')); 
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
