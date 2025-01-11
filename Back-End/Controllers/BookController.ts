@@ -60,7 +60,7 @@ class BookController {
         const filename = image?.filename;
 
         console.log("bookId: ", bookId);
-        console.log("data: ", data);
+        console.log("data: ", req.body);
         console.log("image: ", image);
         console.log("filename: ", filename);
         

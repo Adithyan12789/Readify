@@ -96,6 +96,8 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
       formDataToSend.append('isbn', formData.isbn);
       formDataToSend.append('description', formData.description || '');
       formDataToSend.append('bookImage', image);
+      
+      console.log("formDataToSend: ", formDataToSend);
   
       const response = await editBook({ data: formDataToSend, bookId });
       
