@@ -16,27 +16,30 @@ dotenv_1.default.config();
 Database_1.default.connectDB();
 const port = process.env.PORT || 5000;
 (0, ElasticsearchMiddleware_1.createBookIndex)();
-const allowedOrigins = [
-    "https://readify.space/",
-    "https://www.readify.space/",
-    'http://localhost:3001'
-];
+const allowedOrigins = ['https://readify.space', 'https://www.readify.space'];
 app.use((0, cors_1.default)({
     origin: function (origin, callback) {
-        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         }
         else {
             callback(new Error('Not allowed by CORS'));
         }
     },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true, // Allow cookies or credentials
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow specific methods
 }));
 app.use((0, morgan_1.default)('dev'));
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, cookie_parser_1.default)());
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'https://www.readify.space');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    next();
+});
 // Configure cookie settings for cross-origin
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Credentials', 'true');
