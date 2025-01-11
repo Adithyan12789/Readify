@@ -10,7 +10,7 @@ import { UserInfo } from "../../Types/UserTypes";
 import Loader from "../../Components/UserComponents/Loader";
 import { useNavigate } from "react-router-dom";
 
-const BOOK_IMAGE_DIR_PATH = "https://api.readify.space/bookImages/";
+const BOOK_IMAGE_DIR_PATH = "https://api.readify.space/UserProfileImages/";
 const DEFAULT_PROFILE_IMAGE = "/profileImage_1729749713837.jpg";
 
 const ProfileScreen: React.FC = () => {
