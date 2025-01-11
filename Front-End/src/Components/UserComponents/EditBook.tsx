@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { BookData } from '../../Types/UserTypes';
 import { X } from 'lucide-react';
-import { useEditBookMutation } from '../../Slices/UserApiSlice';
+import { useEditBookMutation, useGetBookByIdQuery } from '../../Slices/UserApiSlice';
 
 interface EditBookModalProps {
   isOpen: boolean;
@@ -28,27 +28,21 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
   });
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-
+  const { data: book } = useGetBookByIdQuery(bookId || "");
+  
   useEffect(() => {
-    const fetchBook = async () => {
-      if (isOpen && bookId) {
-        try {
-          const response = await editBook({ bookId });
-          if ('data' in response) {
-            setFormData(response.data);
-            setPreview(response.data.image || '');
-          } else {
-            toast.error('Failed to fetch book data');
-            console.error(response.error);
-          }
-        } catch (error) {
-          toast.error('Failed to fetch book data');
-          console.error(error);
-        }
-      }
-    };
-    fetchBook();
-  }, [isOpen, bookId, editBook]);  
+    if (book) {
+      setFormData({
+        title: book.title,
+        author: book.author,
+        publicationYear: book.publicationYear,
+        isbn: book.isbn,
+        description: book.description,
+        image: book.image
+      });
+      setPreview(book.image ? `${BOOK_IMAGE_DIR_PATH}/${book.image}` : null);
+    }
+  }, [book]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -153,7 +147,7 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
                     type="text"
                     id="title"
                     name="title"
-                    value={formData.title}
+                    value={book.title}
                     onChange={handleChange}
                     required
                     className="w-full px-4 py-2 mt-1 text-sm bg-transparent border border-gray-300 rounded-md dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -170,7 +164,7 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
                     type="text"
                     id="author"
                     name="author"
-                    value={formData.author}
+                    value={book.author}
                     onChange={handleChange}
                     required
                     className="w-full px-4 py-2 mt-1 text-sm bg-transparent border border-gray-300 rounded-md dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -187,7 +181,7 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
                     type="number"
                     id="publicationYear"
                     name="publicationYear"
-                    value={formData.publicationYear}
+                    value={book.publicationYear}
                     onChange={handleChange}
                     required
                     className="w-full px-4 py-2 mt-1 text-sm bg-transparent border border-gray-300 rounded-md dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -204,7 +198,7 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
                     type="text"
                     id="isbn"
                     name="isbn"
-                    value={formData.isbn}
+                    value={book.isbn}
                     onChange={handleChange}
                     required
                     className="w-full px-4 py-2 mt-1 text-sm bg-transparent border border-gray-300 rounded-md dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -250,7 +244,7 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
                   <textarea
                     id="description"
                     name="description"
-                    value={formData.description}
+                    value={book.description}
                     onChange={handleChange}
                     rows={3}
                     className="w-full px-4 py-2 mt-1 text-sm bg-transparent border border-gray-300 rounded-md dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
