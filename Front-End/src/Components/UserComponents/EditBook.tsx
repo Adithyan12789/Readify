@@ -1,5 +1,6 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
+import { Fragment } from 'react';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { BookData } from '../../Types/UserTypes';
@@ -27,8 +28,8 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
   });
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const { data: book } = useGetBookByIdQuery(bookId || "", { skip: !bookId });
-
+  const { data: book } = useGetBookByIdQuery(bookId || "");
+  
   useEffect(() => {
     if (book) {
       setFormData({
@@ -61,24 +62,27 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+  
     // Validation checks
     if (!formData.title || !formData.author || !formData.publicationYear || !formData.isbn) {
       toast.error('Please fill in all required fields!');
       return;
     }
-
+  
     if (isNaN(formData.publicationYear) || formData.publicationYear < 0) {
       toast.error('Publication year must be a valid number!');
       return;
     }
-
+  
     if (!image) {
       toast.error('Please upload an image!');
       return;
     }
-
+  
+    
     try {
+      console.log("entered when clicked");
+      
       const formDataToSend = new FormData();
       formDataToSend.append('title', formData.title);
       formDataToSend.append('author', formData.author);
@@ -86,9 +90,11 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
       formDataToSend.append('isbn', formData.isbn);
       formDataToSend.append('description', formData.description || '');
       formDataToSend.append('bookImage', image);
-
+  
       const response = await editBook({ data: formDataToSend, bookId });
-
+      
+      console.log("response: ", response);
+      
       if ('data' in response) {
         toast.success('Book updated successfully!');
         navigate('/');
@@ -101,8 +107,8 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
       toast.error('Failed to update book');
       console.error('Failed to update book:', error);
     }
-  };
-
+  };  
+  
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="fixed inset-0 z-50 overflow-y-auto" onClose={onClose}>
@@ -122,7 +128,7 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
                   Edit Book
                 </Dialog.Title>
                 <button
-                  title="close"
+                  title='close'
                   onClick={onClose}
                   className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
                 >
@@ -130,7 +136,6 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
                 </button>
               </div>
               <form onSubmit={handleSubmit} className="mt-6 space-y-5">
-                {/* Form Fields */}
                 <div>
                   <label
                     htmlFor="title"
@@ -148,7 +153,57 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
                     className="w-full px-4 py-2 mt-1 text-sm bg-transparent border border-gray-300 rounded-md dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
-                {/* Repeat similar input fields for other properties */}
+                <div>
+                  <label
+                    htmlFor="author"
+                    className="block text-sm font-medium text-gray-700 dark:text-[rgb(124,124,124)]"
+                  >
+                    Author
+                  </label>
+                  <input
+                    type="text"
+                    id="author"
+                    name="author"
+                    value={formData.author}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2 mt-1 text-sm bg-transparent border border-gray-300 rounded-md dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="publicationYear"
+                    className="block text-sm font-medium text-gray-700 dark:text-[rgb(124,124,124)]"
+                  >
+                    Publication Year
+                  </label>
+                  <input
+                    type="number"
+                    id="publicationYear"
+                    name="publicationYear"
+                    value={formData.publicationYear}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2 mt-1 text-sm bg-transparent border border-gray-300 rounded-md dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
+                <div>
+                  <label
+                    htmlFor="isbn"
+                    className="block text-sm font-medium text-gray-700 dark:text-[rgb(124,124,124)]"
+                  >
+                    ISBN
+                  </label>
+                  <input
+                    type="text"
+                    id="isbn"
+                    name="isbn"
+                    value={formData.isbn}
+                    onChange={handleChange}
+                    required
+                    className="w-full px-4 py-2 mt-1 text-sm bg-transparent border border-gray-300 rounded-md dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                </div>
                 <div>
                   <label
                     htmlFor="image"
@@ -172,14 +227,29 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
                     />
                     {preview && (
                       <img
-                        src={preview}
+                        src={`${BOOK_IMAGE_DIR_PATH}/${preview}`}
                         alt="Preview"
                         className="object-cover w-16 h-16 ml-4 rounded-md shadow-md"
                       />
                     )}
                   </div>
                 </div>
-                {/* Submit and Cancel Buttons */}
+                <div>
+                  <label
+                    htmlFor="description"
+                    className="block text-sm font-medium text-gray-700 dark:text-[rgb(124,124,124)]"
+                  >
+                    Description
+                  </label>
+                  <textarea
+                    id="description"
+                    name="description"
+                    value={formData.description}
+                    onChange={handleChange}
+                    rows={3}
+                    className="w-full px-4 py-2 mt-1 text-sm bg-transparent border border-gray-300 rounded-md dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  ></textarea>
+                </div>
                 <div className="flex items-center justify-end space-x-4">
                   <button
                     type="button"
