@@ -13,7 +13,7 @@ interface EditBookModalProps {
   bookId: string;
 }
 
-const BOOK_IMAGE_DIR_PATH = "http://localhost:5000/bookImages/";
+const BOOK_IMAGE_DIR_PATH = "https://api.readify.space/bookImages/";
 
 const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }) => {
   const navigate = useNavigate();

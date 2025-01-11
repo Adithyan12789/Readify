@@ -238,7 +238,7 @@ class UserController {
             }
             try {
                 const resetToken = await UserService_1.default.forgotPasswordService(email);
-                const resetUrl = `http://locahost:3000/reset-password/${resetToken}`;
+                const resetUrl = `https://api.readify.space/reset-password/${resetToken}`;
                 const message = `Password reset link: ${resetUrl}`;
                 await EmailUtil_1.default.sendOtpEmail(email, message);
                 res.status(200).json({ message: "Password reset email sent" });

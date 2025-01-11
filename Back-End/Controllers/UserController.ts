@@ -291,7 +291,7 @@ class UserController {
 
       try {
         const resetToken = await UserService.forgotPasswordService(email);
-        const resetUrl = `http://locahost:3000/reset-password/${resetToken}`;
+        const resetUrl = `https://api.readify.space/reset-password/${resetToken}`;
         const message = `Password reset link: ${resetUrl}`;
 
         await EmailUtil.sendOtpEmail(email, message);
