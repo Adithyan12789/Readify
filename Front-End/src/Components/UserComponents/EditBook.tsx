@@ -34,13 +34,8 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
       if (isOpen && bookId) {
         try {
           const response = await editBook({ bookId });
-          if ('data' in response) {
             setFormData(response.data);
             setPreview(response.data.image || '');
-          } else {
-            toast.error('Failed to fetch book data');
-            console.error(response.error);
-          }
         } catch (error) {
           toast.error('Failed to fetch book data');
           console.error(error);
