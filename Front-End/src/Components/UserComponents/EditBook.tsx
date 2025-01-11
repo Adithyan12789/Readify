@@ -34,10 +34,13 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
       if (isOpen && bookId) {
         try {
           const response = await editBook({ bookId });
-          console.log("response: ", response);
-          
+          if ('data' in response) {
             setFormData(response.data);
             setPreview(response.data.image || '');
+          } else {
+            toast.error('Failed to fetch book data');
+            console.error(response.error);
+          }
         } catch (error) {
           toast.error('Failed to fetch book data');
           console.error(error);
@@ -93,16 +96,19 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
       formDataToSend.append('isbn', formData.isbn);
       formDataToSend.append('description', formData.description || '');
       formDataToSend.append('bookImage', image);
-      
-      console.log("formDataToSend: ", formDataToSend);
   
-      const response2 = await editBook({ data: formDataToSend, bookId });
+      const response = await editBook({ data: formDataToSend, bookId });
       
-      console.log("response: ", response2);
+      console.log("response: ", response);
       
+      if ('data' in response) {
         toast.success('Book updated successfully!');
         navigate('/');
         onClose();
+      } else {
+        toast.error('Failed to update book');
+        console.error(response.error);
+      }
     } catch (error) {
       toast.error('Failed to update book');
       console.error('Failed to update book:', error);
