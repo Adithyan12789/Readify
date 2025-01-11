@@ -56,13 +56,15 @@ class BookService {
     }
 
     // Update the book in Elasticsearch
-    await client.update({
+    let result = await client.update({
       index: "books",
       id: id,
       body: {
         doc: data,  // Only update fields that have changed
       },
     });
+
+    console.log("result: ", result);
 
     return updatedBook;
   }

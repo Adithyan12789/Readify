@@ -48,7 +48,7 @@ class BookController {
                 const image = req.file;
                 const filename = image?.filename;
                 console.log("bookId: ", bookId);
-                console.log("data: ", data);
+                console.log("data: ", req.body);
                 console.log("image: ", image);
                 console.log("filename: ", filename);
                 const updatedBook = await BookService_1.default.updateBook(bookId, data, filename);

@@ -51,13 +51,14 @@ class BookService {
             throw new Error("Book not found");
         }
         // Update the book in Elasticsearch
-        await Elasticsearch_1.default.update({
+        let result = await Elasticsearch_1.default.update({
             index: "books",
             id: id,
             body: {
                 doc: data, // Only update fields that have changed
             },
         });
+        console.log("result: ", result);
         return updatedBook;
     }
     async deleteBook(id) {
