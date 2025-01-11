@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { toast } from 'react-hot-toast';
@@ -29,20 +29,6 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const { data: book } = useGetBookByIdQuery(bookId || "");
-  
-  useEffect(() => {
-    if (book) {
-      setFormData({
-        title: book.title,
-        author: book.author,
-        publicationYear: book.publicationYear,
-        isbn: book.isbn,
-        description: book.description,
-        image: book.image
-      });
-      setPreview(book.image ? `${BOOK_IMAGE_DIR_PATH}/${book.image}` : null);
-    }
-  }, [book]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
