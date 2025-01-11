@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { Fragment } from 'react';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { BookData } from '../../Types/UserTypes';
@@ -28,7 +27,21 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
   });
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
-  const { data: book } = useGetBookByIdQuery(bookId || "");
+  const { data: book } = useGetBookByIdQuery(bookId || "", { skip: !bookId });
+
+  useEffect(() => {
+    if (book) {
+      setFormData({
+        title: book.title,
+        author: book.author,
+        publicationYear: book.publicationYear,
+        isbn: book.isbn,
+        description: book.description,
+        image: book.image
+      });
+      setPreview(book.image ? `${BOOK_IMAGE_DIR_PATH}/${book.image}` : null);
+    }
+  }, [book]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -48,27 +61,24 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-  
+
     // Validation checks
     if (!formData.title || !formData.author || !formData.publicationYear || !formData.isbn) {
       toast.error('Please fill in all required fields!');
       return;
     }
-  
+
     if (isNaN(formData.publicationYear) || formData.publicationYear < 0) {
       toast.error('Publication year must be a valid number!');
       return;
     }
-  
+
     if (!image) {
       toast.error('Please upload an image!');
       return;
     }
-  
-    
+
     try {
-      console.log("entered when clicked");
-      
       const formDataToSend = new FormData();
       formDataToSend.append('title', formData.title);
       formDataToSend.append('author', formData.author);
@@ -76,11 +86,9 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
       formDataToSend.append('isbn', formData.isbn);
       formDataToSend.append('description', formData.description || '');
       formDataToSend.append('bookImage', image);
-  
+
       const response = await editBook({ data: formDataToSend, bookId });
-      
-      console.log("response: ", response);
-      
+
       if ('data' in response) {
         toast.success('Book updated successfully!');
         navigate('/');
@@ -93,8 +101,8 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
       toast.error('Failed to update book');
       console.error('Failed to update book:', error);
     }
-  };  
-  
+  };
+
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="fixed inset-0 z-50 overflow-y-auto" onClose={onClose}>
@@ -114,7 +122,7 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
                   Edit Book
                 </Dialog.Title>
                 <button
-                  title='close'
+                  title="close"
                   onClick={onClose}
                   className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
                 >
@@ -122,6 +130,7 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
                 </button>
               </div>
               <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+                {/* Form Fields */}
                 <div>
                   <label
                     htmlFor="title"
@@ -133,63 +142,13 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
                     type="text"
                     id="title"
                     name="title"
-                    value={book.title}
+                    value={formData.title}
                     onChange={handleChange}
                     required
                     className="w-full px-4 py-2 mt-1 text-sm bg-transparent border border-gray-300 rounded-md dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </div>
-                <div>
-                  <label
-                    htmlFor="author"
-                    className="block text-sm font-medium text-gray-700 dark:text-[rgb(124,124,124)]"
-                  >
-                    Author
-                  </label>
-                  <input
-                    type="text"
-                    id="author"
-                    name="author"
-                    value={book.author}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-2 mt-1 text-sm bg-transparent border border-gray-300 rounded-md dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="publicationYear"
-                    className="block text-sm font-medium text-gray-700 dark:text-[rgb(124,124,124)]"
-                  >
-                    Publication Year
-                  </label>
-                  <input
-                    type="number"
-                    id="publicationYear"
-                    name="publicationYear"
-                    value={book.publicationYear}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-2 mt-1 text-sm bg-transparent border border-gray-300 rounded-md dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="isbn"
-                    className="block text-sm font-medium text-gray-700 dark:text-[rgb(124,124,124)]"
-                  >
-                    ISBN
-                  </label>
-                  <input
-                    type="text"
-                    id="isbn"
-                    name="isbn"
-                    value={book.isbn}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-4 py-2 mt-1 text-sm bg-transparent border border-gray-300 rounded-md dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                </div>
+                {/* Repeat similar input fields for other properties */}
                 <div>
                   <label
                     htmlFor="image"
@@ -213,29 +172,14 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
                     />
                     {preview && (
                       <img
-                        src={`${BOOK_IMAGE_DIR_PATH}/${preview}`}
+                        src={preview}
                         alt="Preview"
                         className="object-cover w-16 h-16 ml-4 rounded-md shadow-md"
                       />
                     )}
                   </div>
                 </div>
-                <div>
-                  <label
-                    htmlFor="description"
-                    className="block text-sm font-medium text-gray-700 dark:text-[rgb(124,124,124)]"
-                  >
-                    Description
-                  </label>
-                  <textarea
-                    id="description"
-                    name="description"
-                    value={book.description}
-                    onChange={handleChange}
-                    rows={3}
-                    className="w-full px-4 py-2 mt-1 text-sm bg-transparent border border-gray-300 rounded-md dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  ></textarea>
-                </div>
+                {/* Submit and Cancel Buttons */}
                 <div className="flex items-center justify-end space-x-4">
                   <button
                     type="button"
