@@ -11,7 +11,7 @@ const client = new Client({
     password: process.env.ELASTIC_PASSWORD || "metasploit.123",
   },
   tls: {
-    ca: fs.readFileSync("./certs/http_ca.crt", "utf-8"),
+    ca: fs.readFileSync("../certs/http_ca.crt", "utf-8"),
     rejectUnauthorized: false,
   },
 });
