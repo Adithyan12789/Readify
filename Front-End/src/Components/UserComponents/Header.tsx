@@ -11,7 +11,7 @@ import {
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
 
-const PROFILE_IMAGE_DIR_PATH = "https://readify.space/UserProfileImages/";
+const PROFILE_IMAGE_DIR_PATH = "https://api.readify.space/UserProfileImages/";
 const DEFAULT_PROFILE_IMAGE = "/profileImage_1729749713837.jpg";
 
 const Header: React.FC = () => {
