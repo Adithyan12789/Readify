@@ -88,7 +88,7 @@ const CreateBookModal: React.FC<CreateBookModalProps> = ({
       const result = await createBook(formDataToSend as unknown as BookData);
       if (result) {
         toast.success(`Book "${formData.title}" added successfully!`);
-        navigate("/");
+        navigate("/allBooks");
         // Clear form and close modal
         setFormData({
           title: "",

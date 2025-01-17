@@ -40,7 +40,7 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
         description: book.description,
         image: book.image
       });
-      setPreview(book.image ? `${BOOK_IMAGE_DIR_PATH}/${book.image}` : null);
+      setPreview(book.image ? `${book.image}` : null);
     }
   }, [book]);
 
