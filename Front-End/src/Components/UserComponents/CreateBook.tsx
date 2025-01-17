@@ -12,7 +12,7 @@ interface CreateBookModalProps {
   createBook: (
     bookData: BookData
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ) => Promise<{ data: BookData, error: any } | { error: any }>;
+  ) => Promise<{ data: BookData } | { error: any }>;
 }
 
 const CreateBookModal: React.FC<CreateBookModalProps> = ({
@@ -86,7 +86,7 @@ const CreateBookModal: React.FC<CreateBookModalProps> = ({
       formDataToSend.append("bookImage", image);
 
       const result = await createBook(formDataToSend as unknown as BookData);
-      if (result && !result.error) {
+      if (result) {
         toast.success(`Book "${formData.title}" added successfully!`);
         navigate("/");
         // Clear form and close modal
