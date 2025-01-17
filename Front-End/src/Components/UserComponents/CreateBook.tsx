@@ -1,36 +1,44 @@
-import React, { useState } from 'react';
-import { Dialog, Transition } from '@headlessui/react';
-import { Fragment } from 'react';
-import { toast } from 'react-hot-toast';
-import { useNavigate } from 'react-router-dom';
-import { BookData } from '../../Types/UserTypes';
-import { X } from 'lucide-react';
+import React, { useState } from "react";
+import { Dialog, Transition } from "@headlessui/react";
+import { Fragment } from "react";
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { BookData } from "../../Types/UserTypes";
+import { X } from "lucide-react";
 
 interface CreateBookModalProps {
   isOpen: boolean;
   onClose: () => void;
+  createBook: (
+    bookData: BookData
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  createBook: (bookData: BookData) => Promise<{ data: BookData } | { error: any }>;
+  ) => Promise<{ data: BookData, error: any } | { error: any }>;
 }
 
-const CreateBookModal: React.FC<CreateBookModalProps> = ({ isOpen, onClose, createBook }) => {
+const CreateBookModal: React.FC<CreateBookModalProps> = ({
+  isOpen,
+  onClose,
+  createBook,
+}) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<BookData>({
-    title: '',
-    author: '',
+    title: "",
+    author: "",
     publicationYear: new Date().getFullYear(),
-    isbn: '',
-    description: '',
-    image: ''
+    isbn: "",
+    description: "",
+    image: "",
   });
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
       ...prevState,
-      [name]: name === 'publicationYear' ? parseInt(value, 10) || '' : value,
+      [name]: name === "publicationYear" ? parseInt(value, 10) || "" : value,
     }));
   };
 
@@ -44,59 +52,73 @@ const CreateBookModal: React.FC<CreateBookModalProps> = ({ isOpen, onClose, crea
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-  
-    if (!formData.title || !formData.author || !formData.publicationYear || !formData.isbn) {
-      toast.error('Please fill in all required fields!');
+
+    if (
+      !formData.title ||
+      !formData.author ||
+      !formData.publicationYear ||
+      !formData.isbn
+    ) {
+      toast.error("Please fill in all required fields!");
       return;
     }
-  
+
     if (isNaN(formData.publicationYear) || formData.publicationYear < 0) {
-      toast.error('Publication year must be a valid number!');
+      toast.error("Publication year must be a valid number!");
       return;
     }
-  
+
     if (!image) {
-      toast.error('Please upload an image!');
+      toast.error("Please upload an image!");
       return;
     }
-  
+
     try {
       const formDataToSend = new FormData();
-      formDataToSend.append('title', formData.title);
-      formDataToSend.append('author', formData.author);
-      formDataToSend.append('publicationYear', formData.publicationYear.toString());
-      formDataToSend.append('isbn', formData.isbn);
-      formDataToSend.append('description', formData.description || '');
-      formDataToSend.append('bookImage', image);
-  
-      const result = await createBook(formDataToSend as unknown as BookData);
-      
-      console.log("result: ", result);
+      formDataToSend.append("title", formData.title);
+      formDataToSend.append("author", formData.author);
+      formDataToSend.append(
+        "publicationYear",
+        formData.publicationYear.toString()
+      );
+      formDataToSend.append("isbn", formData.isbn);
+      formDataToSend.append("description", formData.description || "");
+      formDataToSend.append("bookImage", image);
 
-        toast.success('Book added successfully!');
-        navigate('/');
+      const result = await createBook(formDataToSend as unknown as BookData);
+      if (result && !result.error) {
+        toast.success(`Book "${formData.title}" added successfully!`);
+        navigate("/");
+        // Clear form and close modal
         setFormData({
-          title: '',
-          author: '',
+          title: "",
+          author: "",
           publicationYear: new Date().getFullYear(),
-          isbn: '',
-          description: '',
-          image: ''
+          isbn: "",
+          description: "",
+          image: "",
         });
         setImage(null);
         setPreview(null);
         onClose();
+      } else {
+        toast.error("Failed to add book");
+      }
     } catch (error) {
-      toast.error('Failed to add book');
-      console.error('Failed to add book:', error);
+      toast.error("Failed to add book");
+      console.error("Failed to add book:", error);
     }
-  };   
-  
+  };
+
   console.log("book image: ", image);
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="fixed inset-0 z-50 overflow-y-auto" onClose={onClose}>
+      <Dialog
+        as="div"
+        className="fixed inset-0 z-50 overflow-y-auto"
+        onClose={onClose}
+      >
         <div className="flex items-center justify-center min-h-screen bg-black/50">
           <Transition.Child
             as={Fragment}
@@ -113,7 +135,7 @@ const CreateBookModal: React.FC<CreateBookModalProps> = ({ isOpen, onClose, crea
                   Create New Book
                 </Dialog.Title>
                 <button
-                  title='add'
+                  title="add"
                   onClick={onClose}
                   className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
                 >
@@ -190,7 +212,7 @@ const CreateBookModal: React.FC<CreateBookModalProps> = ({ isOpen, onClose, crea
                   />
                 </div>
                 <div>
-                <label
+                  <label
                     htmlFor="image"
                     className="block text-sm font-medium text-gray-700 dark:text-[rgb(124,124,124)]"
                   >

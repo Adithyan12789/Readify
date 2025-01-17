@@ -95,14 +95,9 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
       
       console.log("response: ", response);
       
-      if ('data' in response) {
         toast.success('Book updated successfully!');
-        navigate('/');
+        navigate('/allBooks');
         onClose();
-      } else {
-        toast.error('Failed to update book');
-        console.error(response.error);
-      }
     } catch (error) {
       toast.error('Failed to update book');
       console.error('Failed to update book:', error);
