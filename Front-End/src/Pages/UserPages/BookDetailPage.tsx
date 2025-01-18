@@ -51,14 +51,9 @@ const BookDetailPage: React.FC = () => {
   };
 
   const deleteBookHandler = async () => {
-    try {
+      navigate("/");
       await deleteBook(bookId).unwrap();
       Swal.fire("Deleted!", "Your book has been deleted.", "success");
-      navigate("/allBooks");
-    } catch (error) {
-      Swal.fire("Error!", "There was an error deleting the book.", "error");
-      console.error("Error deleting book:", error);
-    }
   };
 
   return (
