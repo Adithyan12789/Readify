@@ -13,6 +13,8 @@ interface EditBookModalProps {
   bookId: string;
 }
 
+const BOOK_IMAGE_DIR_PATH = "https://api.readify.space/bookImages/";
+
 const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }) => {
   const navigate = useNavigate();
   const [editBook] = useEditBookMutation();
@@ -220,7 +222,7 @@ const EditBookModal: React.FC<EditBookModalProps> = ({ isOpen, onClose, bookId }
                     />
                     {preview && (
                       <img
-                        src={`${preview}`}
+                        src={`${BOOK_IMAGE_DIR_PATH}/${preview}`}
                         alt="Preview"
                         className="object-cover w-16 h-16 ml-4 rounded-md shadow-md"
                       />
