@@ -1,92 +1,74 @@
-import asyncHandler from "express-async-handler";
-import { Request, Response } from "express";
-import BookService from "../Services/BookService";
-import path from "path";
+import asyncHandler from "express-async-handler"
+import type { Request, Response } from "express"
+import { inject, injectable } from "inversify"
+import type { IBookService } from "../Interface/IBook/IService"
 
-class BookController {
-  createBook = asyncHandler(
-    async (req: Request, res: Response): Promise<void> => {
-  
-      try {
-        const bookData = req.body;
-        const image = req.file;
-  
-        if (!image) {
-          throw new Error("Image is required");
-        }
+@injectable()
+export class BookController {
+  constructor(
+    @inject("IBookService") private readonly bookService: IBookService
+  ) {}
 
-        let filename = image.filename;
-  
-        const book = await BookService.createBook(bookData, filename);
-  
-        res.status(201).json(book);
-      } catch (error) {
-        res.status(400).json({ message: error });
+  createBook = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    try {
+      const bookData = req.body
+      const image = req.file
+
+      if (!image) {
+        throw new Error("Image is required")
       }
+
+      const filename = image.filename
+
+      const book = await this.bookService.createBook(bookData, filename)
+
+      res.status(201).json(book)
+    } catch (error) {
+      res.status(400).json({ message: error })
     }
-  );  
-  
-  getAllBooks = asyncHandler(
-    async (req: Request, res: Response): Promise<void> => {
-      try {
-        const books = await BookService.getAllBooks();
-        res.status(200).json(books);
-      } catch (error) {
-        res.status(500).json({ message: "Internal server error" });
-      }
+  })
+
+  getAllBooks = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    try {
+      const books = await this.bookService.getAllBooks()
+      res.status(200).json(books)
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" })
     }
-  );
+  })
 
-  getBookById = asyncHandler(
-    async (req: Request, res: Response): Promise<void> => {
-      try {
-        let bookId = req.params.id;
+  getBookById = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    try {
+      const bookId = req.params.id
 
-        const book = await BookService.getBookById(bookId);
-        res.status(200).json(book);
-      } catch (error) {
-        res.status(404).json({ message: error });
-      }
+      const book = await this.bookService.getBookById(bookId)
+      res.status(200).json(book)
+    } catch (error) {
+      res.status(404).json({ message: error })
     }
-  );
+  })
 
-  updateBook = asyncHandler(
-    async (req: Request, res: Response): Promise<void> => {
+  updateBook = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    try {
+      const bookId = req.params.id
+      const data = req.body
+      const image = req.file
+      const filename = image?.filename
 
-      try {
-        const bookId = req.params.id;
-        const data = req.body;
-        const image = req.file;
-        const filename = image?.filename;
-
-        console.log("bookId: ", bookId);
-        console.log("data: ", req.body);
-        console.log("image: ", image);
-        console.log("filename: ", filename);
-        
-        const updatedBook = await BookService.updateBook(bookId, data, filename);
-        if (!updatedBook) {
-          res.status(404).json({ message: "Book not found" });
-          return;
-        }
-  
-        res.status(200).json(updatedBook);
-      } catch (error) {
-        res.status(500).json({ message: "Failed to update book", error });
-      }
+      const updatedBook = await this.bookService.updateBook(bookId, data, filename)
+      res.status(200).json(updatedBook)
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update book", error })
     }
-  );  
+  })
 
-  deleteBook = asyncHandler(
-    async (req: Request, res: Response): Promise<void> => {
-      try {
-        await BookService.deleteBook(req.params.id);
-        res.status(200).json({ message: "Book deleted successfully" });
-      } catch (error) {
-        res.status(404).json({ message: error });
-      }
+  deleteBook = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    try {
+      await this.bookService.deleteBook(req.params.id)
+      res.status(200).json({ message: "Book deleted successfully" })
+    } catch (error) {
+      res.status(404).json({ message: error })
     }
-  );
+  })
 }
 
-export default new BookController();

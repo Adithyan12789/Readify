@@ -1,17 +1,33 @@
 "use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const BookRepository_1 = __importDefault(require("../Repositories/BookRepository"));
+exports.BookService = void 0;
+const inversify_1 = require("inversify");
 const Elasticsearch_1 = __importDefault(require("../Config/Elasticsearch"));
-class BookService {
+let BookService = class BookService {
+    constructor(bookRepository) {
+        this.bookRepository = bookRepository;
+    }
     async createBook(data, filename) {
         const { title, author, publicationYear, isbn, description } = data;
         if (!title || !author || !publicationYear || !isbn || !filename) {
             throw new Error("All required fields, including the image filename, must be provided");
         }
-        const book = await BookRepository_1.default.createBook({
+        const book = await this.bookRepository.createBook({
             title,
             author,
             publicationYear,
@@ -20,8 +36,8 @@ class BookService {
             image: filename,
         });
         await Elasticsearch_1.default.index({
-            index: "books", // The index to store the book record in
-            id: book._id.toString(), // Use the MongoDB _id as Elasticsearch document ID
+            index: "books",
+            id: book._id.toString(),
             body: {
                 title,
                 author,
@@ -33,10 +49,10 @@ class BookService {
         return book;
     }
     async getAllBooks() {
-        return BookRepository_1.default.getAllBooks();
+        return this.bookRepository.getAllBooks();
     }
     async getBookById(id) {
-        const book = await BookRepository_1.default.getBookById(id);
+        const book = await this.bookRepository.getBookById(id);
         if (!book) {
             throw new Error("Book not found");
         }
@@ -46,23 +62,21 @@ class BookService {
         if (filename) {
             data.image = filename;
         }
-        const updatedBook = await BookRepository_1.default.updateBook(id, data);
+        const updatedBook = await this.bookRepository.updateBook(id, data);
         if (!updatedBook) {
             throw new Error("Book not found");
         }
-        // Update the book in Elasticsearch
-        let result = await Elasticsearch_1.default.update({
+        await Elasticsearch_1.default.update({
             index: "books",
             id: id,
             body: {
-                doc: data, // Only update fields that have changed
+                doc: data,
             },
         });
-        console.log("result: ", result);
         return updatedBook;
     }
     async deleteBook(id) {
-        const deletedBook = await BookRepository_1.default.deleteBook(id);
+        const deletedBook = await this.bookRepository.deleteBook(id);
         if (!deletedBook) {
             throw new Error("Book not found");
         }
@@ -72,5 +86,10 @@ class BookService {
         });
         return deletedBook;
     }
-}
-exports.default = new BookService();
+};
+exports.BookService = BookService;
+exports.BookService = BookService = __decorate([
+    (0, inversify_1.injectable)(),
+    __param(0, (0, inversify_1.inject)("IBookRepository")),
+    __metadata("design:paramtypes", [Object])
+], BookService);

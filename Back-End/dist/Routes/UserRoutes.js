@@ -4,28 +4,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const UserController_1 = __importDefault(require("../Controllers/UserController"));
 const AuthMiddleware_1 = require("../Middlewares/AuthMiddleware");
 const Multer_1 = __importDefault(require("../Config/Multer"));
-const BookController_1 = __importDefault(require("../Controllers/BookController"));
+const Container_1 = require("../Config/Container");
 const router = express_1.default.Router();
-router.post('/auth', UserController_1.default.authUser);
-router.post('/googleLogin', UserController_1.default.googleLogin);
-router.post('/signup', UserController_1.default.registerUser);
-router.post('/verifyotp', UserController_1.default.verifyOTP);
-router.post('/resend-otp', UserController_1.default.resendOtp);
-router.post('/forgot-password', UserController_1.default.forgotPassword);
-router.put('/reset-password/:token', UserController_1.default.resetPassword);
-router.post('/refresh-token', UserController_1.default.refreshToken);
+const userControllerr = Container_1.container.get("UserController");
+const bookControllerr = Container_1.container.get("BookController");
+router.post('/auth', userControllerr.authUser);
+router.post('/googleLogin', userControllerr.googleLogin);
+router.post('/signup', userControllerr.registerUser);
+router.post('/verifyotp', userControllerr.verifyOTP);
+router.post('/resend-otp', userControllerr.resendOtp);
+router.post('/forgot-password', userControllerr.forgotPassword);
+router.put('/reset-password/:token', userControllerr.resetPassword);
+router.post('/refresh-token', userControllerr.refreshToken);
 router.route('/profile')
-    .get(AuthMiddleware_1.AuthMiddleware, UserController_1.default.getUserProfile)
-    .put(AuthMiddleware_1.AuthMiddleware, Multer_1.default.multerUploadUserProfile.single('profileImage'), UserController_1.default.updateUserProfile);
+    .get(AuthMiddleware_1.AuthMiddleware, userControllerr.getUserProfile)
+    .put(AuthMiddleware_1.AuthMiddleware, Multer_1.default.multerUploadUserProfile.single('profileImage'), userControllerr.updateUserProfile);
 router.route('/books')
-    .post(AuthMiddleware_1.AuthMiddleware, Multer_1.default.multerUpload.single('bookImage'), BookController_1.default.createBook)
-    .get(BookController_1.default.getAllBooks);
+    .post(AuthMiddleware_1.AuthMiddleware, Multer_1.default.multerUpload.single('bookImage'), bookControllerr.createBook)
+    .get(bookControllerr.getAllBooks);
 router.route('/books/:id')
-    .get(BookController_1.default.getBookById)
-    .put(AuthMiddleware_1.AuthMiddleware, Multer_1.default.multerUpload.single('bookImage'), BookController_1.default.updateBook)
-    .delete(AuthMiddleware_1.AuthMiddleware, BookController_1.default.deleteBook);
-router.post('/logout', UserController_1.default.logoutUser);
+    .get(bookControllerr.getBookById)
+    .put(AuthMiddleware_1.AuthMiddleware, Multer_1.default.multerUpload.single('bookImage'), bookControllerr.updateBook)
+    .delete(AuthMiddleware_1.AuthMiddleware, bookControllerr.deleteBook);
+router.post('/logout', userControllerr.logoutUser);
 exports.default = router;

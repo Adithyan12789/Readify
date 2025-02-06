@@ -1,26 +1,34 @@
-import BookRepository from "../Repositories/BookRepository";
-import client from "../Config/Elasticsearch";
+import { inject, injectable } from "inversify"
+import type { IBookService } from "../Interface/IBook/IService"
+import type { IBookRepository } from "../Interface/IBook/IRepository"
+import client from "../Config/Elasticsearch"
+import type { IBook } from "../Types/UserTypes"
 
-class BookService {
-  async createBook(data: any, filename: string) {
-    const { title, author, publicationYear, isbn, description } = data;
-  
+@injectable()
+export class BookService implements IBookService {
+  constructor(
+    @inject("IBookRepository") private bookRepository: IBookRepository
+  ) {}
+
+  async createBook(data: any, filename: string): Promise<IBook> {
+    const { title, author, publicationYear, isbn, description } = data
+
     if (!title || !author || !publicationYear || !isbn || !filename) {
-      throw new Error("All required fields, including the image filename, must be provided");
+      throw new Error("All required fields, including the image filename, must be provided")
     }
 
-    const book = await BookRepository.createBook({
+    const book = await this.bookRepository.createBook({
       title,
       author,
       publicationYear,
       isbn,
       description,
       image: filename,
-    });
+    })
 
     await client.index({
-      index: "books", // The index to store the book record in
-      id: book._id.toString(), // Use the MongoDB _id as Elasticsearch document ID
+      index: "books",
+      id: book._id.toString(),
       body: {
         title,
         author,
@@ -28,60 +36,56 @@ class BookService {
         isbn,
         description,
       },
-    });
+    })
 
-    return book;
+    return book
   }
 
-  async getAllBooks() {
-    return BookRepository.getAllBooks();
+  async getAllBooks(): Promise<IBook[]> {
+    return this.bookRepository.getAllBooks()
   }
 
-  async getBookById(id: string) {
-    const book = await BookRepository.getBookById(id);
+  async getBookById(id: string): Promise<IBook> {
+    const book = await this.bookRepository.getBookById(id)
     if (!book) {
-      throw new Error("Book not found");
+      throw new Error("Book not found")
     }
-    return book;
+    return book
   }
 
-  async updateBook(id: string, data: any, filename?: string) {
+  async updateBook(id: string, data: any, filename?: string): Promise<IBook> {
     if (filename) {
-      data.image = filename;
+      data.image = filename
     }
 
-    const updatedBook = await BookRepository.updateBook(id, data);
+    const updatedBook = await this.bookRepository.updateBook(id, data)
     if (!updatedBook) {
-      throw new Error("Book not found");
+      throw new Error("Book not found")
     }
 
-    // Update the book in Elasticsearch
-    let result = await client.update({
+    await client.update({
       index: "books",
       id: id,
       body: {
-        doc: data,  // Only update fields that have changed
+        doc: data,
       },
-    });
+    })
 
-    console.log("result: ", result);
-
-    return updatedBook;
+    return updatedBook
   }
 
-  async deleteBook(id: string) {
-    const deletedBook = await BookRepository.deleteBook(id);
+  async deleteBook(id: string): Promise<IBook> {
+    const deletedBook = await this.bookRepository.deleteBook(id)
     if (!deletedBook) {
-      throw new Error("Book not found");
+      throw new Error("Book not found")
     }
-    
+
     await client.delete({
       index: "books",
       id: id,
-    });
+    })
 
-    return deletedBook;
+    return deletedBook
   }
 }
 
-export default new BookService();

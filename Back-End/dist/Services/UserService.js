@@ -1,77 +1,51 @@
 "use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.UserService = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const crypto_1 = __importDefault(require("crypto"));
-const UserRepository_1 = __importDefault(require("../Repositories/UserRepository"));
 const EmailUtil_1 = __importDefault(require("../Utils/EmailUtil"));
-const UserModel_1 = __importDefault(require("../Models/UserModel"));
-class UserService {
-    constructor() {
-        this.getUserProfile = async (userId) => {
-            const user = await UserRepository_1.default.findUserById(userId);
-            console.log("Controller User: ", user);
-            if (!user) {
-                throw new Error("User not found");
-            }
-            return {
-                _id: user._id,
-                name: user.name,
-                email: user.email,
-                phone: user.phone,
-                profileImageName: user.profileImageName,
-            };
-        };
-        this.updateUserProfileService = async (userId, updateData, profileImage) => {
-            const user = await UserRepository_1.default.findUserById(userId);
-            if (!user) {
-                throw new Error("User not found");
-            }
-            // Only check current password if user is updating their password
-            if (updateData.password && updateData.currentPassword) {
-                const isMatch = await user.matchPassword(updateData.currentPassword);
-                if (!isMatch) {
-                    throw new Error("Current password is incorrect");
-                }
-            }
-            user.name = updateData.name || user.name;
-            user.phone = updateData.phone || user.phone;
-            // If a new password is provided, hash it
-            if (updateData.password) {
-                const salt = await bcryptjs_1.default.genSalt(10);
-                user.password = await bcryptjs_1.default.hash(updateData.password, salt);
-            }
-            // If a new profile image is uploaded, update the image filename
-            if (profileImage) {
-                user.profileImageName = profileImage.filename || user.profileImageName;
-            }
-            return await UserRepository_1.default.saveUser(user);
-        };
+const inversify_1 = require("inversify");
+let UserService = class UserService {
+    constructor(userRepository) {
+        this.userRepository = userRepository;
     }
     async authenticateUser(email, password) {
-        const user = await UserRepository_1.default.findUserByEmail(email);
-        console.log("user: ", user);
-        if (user) {
-            if (user.isBlocked) {
-                throw new Error("Your account is blocked");
-            }
-            if (await user.matchPassword(password)) {
-                return user;
-            }
+        const user = await this.userRepository.findUserByEmail(email);
+        if (!user) {
+            throw new Error("Invalid Email or Password");
+        }
+        if (user.isBlocked) {
+            throw new Error("Your account is blocked");
+        }
+        if (await user.matchPassword(password)) {
+            return user;
         }
         throw new Error("Invalid Email or Password");
     }
-    async registerUserService(name, email, password, phone) {
-        const existingUser = await UserModel_1.default.findOne({ email });
+    async registerUser(name, email, password, phone) {
+        const existingUser = await this.userRepository.findUserByEmail(email);
         if (existingUser) {
             if (!existingUser.otpVerified) {
                 const otp = crypto_1.default.randomInt(100000, 999999).toString();
                 existingUser.otp = otp;
                 existingUser.otpVerified = false;
                 existingUser.otpGeneratedAt = new Date();
-                await existingUser.save();
+                await this.userRepository.saveUser(existingUser);
                 await EmailUtil_1.default.sendOtpEmail(existingUser.email, otp);
                 return existingUser;
             }
@@ -80,7 +54,7 @@ class UserService {
         const otp = crypto_1.default.randomInt(100000, 999999).toString();
         const salt = await bcryptjs_1.default.genSalt(10);
         const hashedPassword = await bcryptjs_1.default.hash(password, salt);
-        const newUser = new UserModel_1.default({
+        const newUser = await this.userRepository.createUser({
             name,
             email,
             phone,
@@ -88,12 +62,11 @@ class UserService {
             otp,
             otpVerified: false,
         });
-        await newUser.save();
         await EmailUtil_1.default.sendOtpEmail(newUser.email, otp);
         return newUser;
     }
-    async verifyOtpService(email, otp) {
-        const user = await UserRepository_1.default.findUserByEmail(email);
+    async verifyOtp(email, otp) {
+        const user = await this.userRepository.findUserByEmail(email);
         if (!user) {
             throw new Error("User not found");
         }
@@ -107,13 +80,13 @@ class UserService {
         }
         if (String(user.otp) === String(otp)) {
             user.otpVerified = true;
-            await user.save();
+            await this.userRepository.saveUser(user);
             return true;
         }
         throw new Error("Incorrect OTP");
     }
-    async resendOtpService(email) {
-        const user = await UserRepository_1.default.findUserByEmail(email);
+    async resendOtp(email) {
+        const user = await this.userRepository.findUserByEmail(email);
         if (!user) {
             throw new Error("User not found");
         }
@@ -121,7 +94,7 @@ class UserService {
         user.otp = otp;
         user.otpExpires = new Date(Date.now() + 1 * 60 * 1000 + 59 * 1000);
         try {
-            await UserRepository_1.default.saveUser(user);
+            await this.userRepository.saveUser(user);
         }
         catch (err) {
             throw new Error("Failed to save user with new OTP");
@@ -134,19 +107,19 @@ class UserService {
         }
         return user;
     }
-    async forgotPasswordService(email) {
-        const user = await UserRepository_1.default.findUserByEmail(email);
+    async forgotPassword(email) {
+        const user = await this.userRepository.findUserByEmail(email);
         if (!user) {
             throw new Error("User not found");
         }
         const resetToken = crypto_1.default.randomBytes(32).toString("hex");
         user.resetPasswordToken = resetToken;
         user.resetPasswordExpires = new Date(Date.now() + 30 * 60 * 1000);
-        await user.save();
+        await this.userRepository.saveUser(user);
         return resetToken;
     }
-    async resetPasswordService(resetToken, password) {
-        const user = await UserRepository_1.default.findUserByResetToken(resetToken);
+    async resetPassword(resetToken, password) {
+        const user = await this.userRepository.findUserByResetToken(resetToken);
         if (!user) {
             throw new Error("Invalid or expired token");
         }
@@ -154,11 +127,67 @@ class UserService {
         user.password = await bcryptjs_1.default.hash(password, salt);
         user.resetPasswordToken = undefined;
         user.resetPasswordExpires = undefined;
-        await user.save();
+        await this.userRepository.saveUser(user);
         return true;
     }
-    logoutUserService() {
+    async getUserProfile(userId) {
+        const user = await this.userRepository.findUserById(userId);
+        if (!user) {
+            throw new Error("User not found");
+        }
+        return {
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            profileImageName: user.profileImageName,
+        };
+    }
+    async updateUserProfile(userId, updateData, profileImage) {
+        const user = await this.userRepository.findUserById(userId);
+        if (!user) {
+            throw new Error("User not found");
+        }
+        if (updateData.password && updateData.currentPassword) {
+            const isMatch = await user.matchPassword(updateData.currentPassword);
+            if (!isMatch) {
+                throw new Error("Current password is incorrect");
+            }
+        }
+        user.name = updateData.name || user.name;
+        user.phone = updateData.phone || user.phone;
+        if (updateData.password) {
+            const salt = await bcryptjs_1.default.genSalt(10);
+            user.password = await bcryptjs_1.default.hash(updateData.password, salt);
+        }
+        if (profileImage) {
+            user.profileImageName = profileImage.filename || user.profileImageName;
+        }
+        return await this.userRepository.saveUser(user);
+    }
+    logoutUser() {
         return true;
     }
-}
-exports.default = new UserService();
+    async googleLogin(name, email) {
+        let user = await this.userRepository.findUserByEmail(email);
+        if (user) {
+            return user;
+        }
+        else {
+            user = await this.userRepository.createUser({
+                name,
+                email,
+                otp: "",
+                phone: "",
+                password: "",
+            });
+            return user;
+        }
+    }
+};
+exports.UserService = UserService;
+exports.UserService = UserService = __decorate([
+    (0, inversify_1.injectable)(),
+    __param(0, (0, inversify_1.inject)("IUserRepository")),
+    __metadata("design:paramtypes", [Object])
+], UserService);
