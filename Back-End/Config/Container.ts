@@ -9,6 +9,8 @@ import { BookRepository } from "../Repositories/BookRepository";
 import { BookService } from "../Services/BookService";
 import { IBookRepository } from "../Interface/IBook/IRepository";
 import { IBookService } from "../Interface/IBook/IService";
+import { BookSearchRepository } from "../Repositories/ElasticSearchReposiotry";
+import { IBookSearchRepository } from "../Interface/IBookElasticSearch/IRepository";
 
 const container = new Container();
 
@@ -24,6 +26,7 @@ container.bind<IUserRepository>("IUserRepository").to(UserRepository);
 container.bind<BookController>("BookController").to(BookController);
 container.bind<IBookService>("IBookService").to(BookService);
 container.bind<IBookRepository>("IBookRepository").to(BookRepository);
+container.bind<IBookSearchRepository>("IBookSearchRepository").to(BookSearchRepository);
 
 
 export { container };

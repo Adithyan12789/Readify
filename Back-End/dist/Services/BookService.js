@@ -11,16 +11,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BookService = void 0;
 const inversify_1 = require("inversify");
-const Elasticsearch_1 = __importDefault(require("../Config/Elasticsearch"));
 let BookService = class BookService {
-    constructor(bookRepository) {
+    constructor(bookRepository, bookSearchRepository) {
         this.bookRepository = bookRepository;
+        this.bookSearchRepository = bookSearchRepository;
     }
     async createBook(data, filename) {
         const { title, author, publicationYear, isbn, description } = data;
@@ -35,17 +32,7 @@ let BookService = class BookService {
             description,
             image: filename,
         });
-        await Elasticsearch_1.default.index({
-            index: "books",
-            id: book._id.toString(),
-            body: {
-                title,
-                author,
-                publicationYear,
-                isbn,
-                description,
-            },
-        });
+        await this.bookSearchRepository.indexBook(book._id.toString(), book);
         return book;
     }
     async getAllBooks() {
@@ -66,13 +53,7 @@ let BookService = class BookService {
         if (!updatedBook) {
             throw new Error("Book not found");
         }
-        await Elasticsearch_1.default.update({
-            index: "books",
-            id: id,
-            body: {
-                doc: data,
-            },
-        });
+        await this.bookSearchRepository.updateBookIndex(id, data);
         return updatedBook;
     }
     async deleteBook(id) {
@@ -80,10 +61,7 @@ let BookService = class BookService {
         if (!deletedBook) {
             throw new Error("Book not found");
         }
-        await Elasticsearch_1.default.delete({
-            index: "books",
-            id: id,
-        });
+        await this.bookSearchRepository.deleteBookIndex(id);
         return deletedBook;
     }
 };
@@ -91,5 +69,6 @@ exports.BookService = BookService;
 exports.BookService = BookService = __decorate([
     (0, inversify_1.injectable)(),
     __param(0, (0, inversify_1.inject)("IBookRepository")),
-    __metadata("design:paramtypes", [Object])
+    __param(1, (0, inversify_1.inject)("IBookSearchRepository")),
+    __metadata("design:paramtypes", [Object, Object])
 ], BookService);

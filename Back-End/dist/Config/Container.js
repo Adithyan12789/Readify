@@ -8,6 +8,7 @@ const UserService_1 = require("../Services/UserService");
 const BookController_1 = require("../Controllers/BookController");
 const BookRepository_1 = require("../Repositories/BookRepository");
 const BookService_1 = require("../Services/BookService");
+const ElasticSearchReposiotry_1 = require("../Repositories/ElasticSearchReposiotry");
 const container = new inversify_1.Container();
 exports.container = container;
 // User Bindings
@@ -18,3 +19,4 @@ container.bind("IUserRepository").to(UserRepository_1.UserRepository);
 container.bind("BookController").to(BookController_1.BookController);
 container.bind("IBookService").to(BookService_1.BookService);
 container.bind("IBookRepository").to(BookRepository_1.BookRepository);
+container.bind("IBookSearchRepository").to(ElasticSearchReposiotry_1.BookSearchRepository);
